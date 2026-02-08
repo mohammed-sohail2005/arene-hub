@@ -1,5 +1,6 @@
-import { Gamepad2, Menu, X } from "lucide-react";
+import { Gamepad2, Menu, X, Plus } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 
 const Navbar = () => {
@@ -28,6 +29,12 @@ const Navbar = () => {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
+          <Button variant="outline" className="font-body font-semibold uppercase tracking-wider" asChild>
+            <Link to="/host">
+              <Plus className="h-4 w-4 mr-1" />
+              Host Match
+            </Link>
+          </Button>
           <Button variant="ghost" className="font-body font-semibold uppercase tracking-wider text-muted-foreground hover:text-primary">
             Login
           </Button>
@@ -54,6 +61,12 @@ const Navbar = () => {
                 {item}
               </a>
             ))}
+            <Button variant="outline" className="w-full font-body font-semibold uppercase" asChild>
+              <Link to="/host" onClick={() => setMobileOpen(false)}>
+                <Plus className="h-4 w-4 mr-1" />
+                Host Match
+              </Link>
+            </Button>
             <div className="flex gap-3 pt-2">
               <Button variant="ghost" className="flex-1 font-body font-semibold uppercase">Login</Button>
               <Button className="flex-1 font-body font-bold uppercase neon-glow">Register</Button>
