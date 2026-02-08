@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Gamepad2, Trophy, Users, Clock, Key, Target } from "lucide-react";
+import { CalendarIcon, Gamepad2, Trophy, Users, Clock, Key, Target, Camera } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,27 @@ const HostTournament = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedGame, setSelectedGame] = useState<"bgmi" | "freefire" | null>(null);
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select an image under 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -163,8 +185,42 @@ const HostTournament = () => {
                     )}
                   />
 
-                  {/* Owner Name & Tournament Name */}
+                  {/* Profile Photo & Owner Name */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium">Profile Photo</label>
+                      <div className="flex items-center gap-4">
+                        <div 
+                          className="relative cursor-pointer group"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Avatar className="h-20 w-20 border-2 border-primary/30 group-hover:border-primary transition-colors">
+                            {profilePhoto ? (
+                              <AvatarImage src={profilePhoto} alt="Profile" />
+                            ) : (
+                              <AvatarFallback className="bg-muted">
+                                <Camera className="h-6 w-6 text-muted-foreground" />
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                            <Camera className="h-5 w-5 text-white" />
+                          </div>
+                        </div>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handlePhotoUpload}
+                          className="hidden"
+                        />
+                        <div className="text-sm text-muted-foreground">
+                          <p>Click to upload</p>
+                          <p className="text-xs">JPG, PNG (max 5MB)</p>
+                        </div>
+                      </div>
+                    </div>
+
                     <FormField
                       control={form.control}
                       name="ownerName"
@@ -178,21 +234,22 @@ const HostTournament = () => {
                         </FormItem>
                       )}
                     />
-
-                    <FormField
-                      control={form.control}
-                      name="tournamentName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Tournament Name *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g., Weekend Warriors Cup" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
+
+                  {/* Tournament Name */}
+                  <FormField
+                    control={form.control}
+                    name="tournamentName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tournament Name *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Weekend Warriors Cup" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   {/* Map & Prize Pool */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
