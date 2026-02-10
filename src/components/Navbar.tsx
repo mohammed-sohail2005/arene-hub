@@ -17,15 +17,24 @@ const Navbar = () => {
         </div>
 
         <div className="hidden items-center gap-8 md:flex">
-          {["Tournaments", "Games", "Leaderboard", "How It Works"].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-              className="font-body text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
-            >
-              {item}
-            </a>
-          ))}
+          {["Tournaments", "Games", "Leaderboard", "How It Works"].map((item) => {
+            if (item === "Tournaments") {
+              return (
+                <Link key={item} to="/tournaments" className="font-body text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary">
+                  {item}
+                </Link>
+              );
+            }
+            return (
+              <a
+                key={item}
+                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                className="font-body text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
+              >
+                {item}
+              </a>
+            );
+          })}
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -51,16 +60,25 @@ const Navbar = () => {
       {mobileOpen && (
         <div className="border-t border-border/50 bg-background/95 backdrop-blur-xl md:hidden">
           <div className="flex flex-col gap-4 p-4">
-            {["Tournaments", "Games", "Leaderboard", "How It Works"].map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                className="font-body text-sm font-semibold uppercase tracking-wider text-muted-foreground"
-                onClick={() => setMobileOpen(false)}
-              >
-                {item}
-              </a>
-            ))}
+            {["Tournaments", "Games", "Leaderboard", "How It Works"].map((item) => {
+              if (item === "Tournaments") {
+                return (
+                  <Link key={item} to="/tournaments" className="font-body text-sm font-semibold uppercase tracking-wider text-muted-foreground" onClick={() => setMobileOpen(false)}>
+                    {item}
+                  </Link>
+                );
+              }
+              return (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                  className="font-body text-sm font-semibold uppercase tracking-wider text-muted-foreground"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item}
+                </a>
+              );
+            })}
             <Button variant="outline" className="w-full font-body font-semibold uppercase" asChild>
               <Link to="/host" onClick={() => setMobileOpen(false)}>
                 <Plus className="h-4 w-4 mr-1" />
