@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Gamepad2, Trophy, Users, Clock, Key, Target, Camera } from "lucide-react";
+import { CalendarIcon, Gamepad2, Trophy, Users, Clock, Key, Target, Camera, Youtube, CreditCard } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -36,6 +36,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { createTournament } from "@/services/api";
 
 const bgmiMaps = ["Erangel", "Miramar", "Sanhok", "Vikendi", "Livik", "Karakin"];
 const freefireMaps = ["Bermuda", "Purgatory", "Kalahari", "Alpine", "Nexterra"];
@@ -57,6 +58,8 @@ const formSchema = z.object({
   roomPassword: z.string().min(1, "Room password is required.").max(20),
   maxPlayers: z.string().min(1, "Max players is required."),
   entryFee: z.string().optional(),
+  registerAmount: z.string().min(1, "Registration amount per team is required."),
+  youtubeChannel: z.string().url("Please enter a valid URL.").optional().or(z.literal("")),
   killPoints: z.string().optional(),
   rankPoints: z.string().optional(),
   description: z.string().max(500).optional(),
@@ -103,19 +106,50 @@ const HostTournament = () => {
       roomPassword: "",
       maxPlayers: "100",
       entryFee: "",
+      registerAmount: "",
+      youtubeChannel: "",
       killPoints: "",
       rankPoints: "",
       description: "",
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Tournament Data:", data);
-    toast({
-      title: "Tournament Created!",
-      description: `Your ${data.game.toUpperCase()} tournament "${data.tournamentName}" has been created successfully.`,
-    });
-    // For now, just log and show toast. Later this will save to database.
+  const onSubmit = async (data: FormData) => {
+    try {
+      const tournamentPayload: Parameters<typeof createTournament>[0] = {
+        game: data.game,
+        ownerName: data.ownerName,
+        tournamentName: data.tournamentName,
+        map: data.map,
+        prizePool: data.prizePool,
+        matchDate: data.matchDate.toISOString(),
+        roomOpenTime: data.roomOpenTime,
+        matchStartTime: data.matchStartTime,
+        roomId: data.roomId,
+        roomPassword: data.roomPassword,
+        maxPlayers: data.maxPlayers,
+        entryFee: data.entryFee,
+        registerAmount: data.registerAmount,
+        youtubeChannel: data.youtubeChannel,
+        killPoints: data.killPoints,
+        rankPoints: data.rankPoints,
+        description: data.description,
+        profilePhoto,
+        createdAt: new Date().toISOString(),
+      };
+      await createTournament(tournamentPayload);
+      toast({
+        title: "Tournament Created!",
+        description: `Your ${data.game.toUpperCase()} tournament "${data.tournamentName}" has been created successfully.`,
+      });
+      navigate("/");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create tournament. Make sure your backend is running.",
+        variant: "destructive",
+      });
+    }
   };
 
   const getMaps = () => {
@@ -455,6 +489,45 @@ const HostTournament = () => {
                             <Input type="number" placeholder="Free if empty" {...field} />
                           </FormControl>
                           <FormDescription>Leave empty for free entry</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* Registration Amount & YouTube Channel */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="registerAmount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <CreditCard className="h-4 w-4" />
+                            Registration Amount (₹ per team) *
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="e.g., 100" {...field} />
+                          </FormControl>
+                          <FormDescription>Amount each team pays to register</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="youtubeChannel"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Youtube className="h-4 w-4 text-destructive" />
+                            YouTube Channel Link
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://youtube.com/@yourchannel" {...field} />
+                          </FormControl>
+                          <FormDescription>Stream link for viewers</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
