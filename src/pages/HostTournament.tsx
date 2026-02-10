@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Gamepad2, Trophy, Users, Clock, Key, Target, Camera, Youtube, CreditCard } from "lucide-react";
+import { CalendarIcon, Gamepad2, Trophy, Users, Clock, Target, Camera, Youtube, Wallet } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -54,11 +54,9 @@ const formSchema = z.object({
   }),
   roomOpenTime: z.string().min(1, "Room opening time is required."),
   matchStartTime: z.string().min(1, "Match start time is required."),
-  roomId: z.string().min(1, "Room ID is required.").max(20),
-  roomPassword: z.string().min(1, "Room password is required.").max(20),
   maxPlayers: z.string().min(1, "Max players is required."),
   entryFee: z.string().optional(),
-  registerAmount: z.string().min(1, "Registration amount per team is required."),
+  upiId: z.string().min(3, "UPI ID is required.").max(100),
   youtubeChannel: z.string().url("Please enter a valid URL.").optional().or(z.literal("")),
   killPoints: z.string().optional(),
   rankPoints: z.string().optional(),
@@ -102,11 +100,9 @@ const HostTournament = () => {
       prizePool: "",
       roomOpenTime: "",
       matchStartTime: "",
-      roomId: "",
-      roomPassword: "",
       maxPlayers: "100",
       entryFee: "",
-      registerAmount: "",
+      upiId: "",
       youtubeChannel: "",
       killPoints: "",
       rankPoints: "",
@@ -125,11 +121,12 @@ const HostTournament = () => {
         matchDate: data.matchDate.toISOString(),
         roomOpenTime: data.roomOpenTime,
         matchStartTime: data.matchStartTime,
-        roomId: data.roomId,
-        roomPassword: data.roomPassword,
+        roomId: "",
+        roomPassword: "",
         maxPlayers: data.maxPlayers,
         entryFee: data.entryFee,
-        registerAmount: data.registerAmount,
+        upiId: data.upiId,
+        registerAmount: "0",
         youtubeChannel: data.youtubeChannel,
         killPoints: data.killPoints,
         rankPoints: data.rankPoints,
@@ -415,43 +412,6 @@ const HostTournament = () => {
                     />
                   </div>
 
-                  {/* Room Credentials */}
-                  <div className="p-4 rounded-lg border border-primary/30 bg-primary/5">
-                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-                      <Key className="h-4 w-4 text-primary" />
-                      Room Credentials (Visible only to registered players)
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="roomId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Room ID *</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Enter room ID" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="roomPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Room Password *</FormLabel>
-                            <FormControl>
-                              <Input type="password" placeholder="Enter room password" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
                   {/* Player Settings */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
@@ -495,21 +455,21 @@ const HostTournament = () => {
                     />
                   </div>
 
-                  {/* Registration Amount & YouTube Channel */}
+                  {/* UPI ID & YouTube Channel */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="registerAmount"
+                      name="upiId"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
-                            <CreditCard className="h-4 w-4" />
-                            Registration Amount (₹ per team) *
+                            <Wallet className="h-4 w-4" />
+                            UPI ID *
                           </FormLabel>
                           <FormControl>
-                            <Input type="number" placeholder="e.g., 100" {...field} />
+                            <Input placeholder="e.g., yourname@upi" {...field} />
                           </FormControl>
-                          <FormDescription>Amount each team pays to register</FormDescription>
+                          <FormDescription>Players will pay to this UPI</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}

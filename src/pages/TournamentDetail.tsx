@@ -156,8 +156,8 @@ const TournamentDetail = () => {
             <Card className="border-primary/20 bg-card/50">
               <CardContent className="p-4 text-center">
                 <CreditCard className="h-5 w-5 mx-auto mb-1 text-primary" />
-                <div className="font-display font-bold text-foreground">₹{tournament.registerAmount}</div>
-                <div className="text-xs text-muted-foreground">Per Team</div>
+                <div className="font-display font-bold text-foreground text-xs break-all">{tournament.upiId}</div>
+                <div className="text-xs text-muted-foreground">UPI ID</div>
               </CardContent>
             </Card>
           </div>
@@ -268,8 +268,8 @@ const TournamentDetail = () => {
                 </div>
 
                 <div className="p-3 rounded-lg bg-primary/10 border border-primary/20 text-sm">
-                  <p className="text-muted-foreground">Registration Fee: <span className="font-bold text-foreground">₹{tournament?.registerAmount || "0"}</span> per team</p>
-                  <p className="text-xs text-muted-foreground mt-1">Payment details will be shared after registration.</p>
+                  <p className="text-muted-foreground">Pay via UPI: <span className="font-bold text-foreground">{tournament?.upiId || "N/A"}</span></p>
+                  <p className="text-xs text-muted-foreground mt-1">Send payment to the UPI ID above and register your team.</p>
                 </div>
 
                 <Button className="w-full neon-glow font-display" onClick={handleRegister}>
