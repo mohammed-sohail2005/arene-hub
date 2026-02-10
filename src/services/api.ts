@@ -11,11 +11,12 @@ export interface Tournament {
   matchDate: string;
   roomOpenTime: string;
   matchStartTime: string;
-  roomId: string;
-  roomPassword: string;
+  roomId?: string;
+  roomPassword?: string;
   maxPlayers: string;
   entryFee?: string;
-  registerAmount: string;
+  upiId: string;
+  registerAmount?: string;
   youtubeChannel?: string;
   killPoints?: string;
   rankPoints?: string;
