@@ -26,13 +26,18 @@ export interface Tournament {
   registeredTeams?: RegisteredTeam[];
 }
 
+export interface Player {
+  name: string;
+  playerId: string;
+}
+
 export interface RegisteredTeam {
   _id?: string;
   tournamentId: string;
   teamName: string;
   iglName: string;
   iglPlayerId: string;
-  players: { name: string; playerId: string }[];
+  players: Player[];
   paymentStatus: "pending" | "paid";
   registeredAt: string;
 }

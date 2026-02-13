@@ -1,5 +1,5 @@
 import { Calendar, Trophy, Users } from "lucide-react";
-import { Badge } from "./ui/badge";
+import { Badge } from "@/components/ui/badge";
 
 interface TournamentCardProps {
   game: string;

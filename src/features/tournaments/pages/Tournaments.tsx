@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
-import { getTournaments } from "@/services/api";
+import { getTournaments } from "../services/api";
 
 const Tournaments = () => {
   const { data: tournaments, isLoading, error } = useQuery({
@@ -74,7 +74,7 @@ const Tournaments = () => {
 
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground flex items-center gap-1">
-                    <CreditCard className="h-3 w-3" /> ₹{t.registerAmount}/team
+                    <CreditCard className="h-3 w-3" /> {t.entryFee ? `₹${t.entryFee}` : "Free"}
                   </span>
                   <span className="text-muted-foreground flex items-center gap-1">
                     <Users className="h-3 w-3" /> {t.registeredTeams?.length || 0} teams
