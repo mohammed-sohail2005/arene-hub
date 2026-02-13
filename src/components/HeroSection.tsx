@@ -1,4 +1,5 @@
 import { Trophy, Users, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import heroBg from "@/assets/hero-bg.jpg";
 
@@ -33,16 +34,20 @@ const HeroSection = () => {
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button size="lg" className="px-8 py-6 font-display text-sm font-bold uppercase tracking-widest neon-glow">
-              Join Tournament
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-muted-foreground/30 px-8 py-6 font-display text-sm font-bold uppercase tracking-widest text-foreground hover:border-primary hover:text-primary"
-            >
-              Host a Match
-            </Button>
+            <Link to="/tournaments">
+              <Button size="lg" className="px-8 py-6 font-display text-sm font-bold uppercase tracking-widest neon-glow">
+                Join Tournament
+              </Button>
+            </Link>
+            <Link to="/host">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-muted-foreground/30 px-8 py-6 font-display text-sm font-bold uppercase tracking-widest text-foreground hover:border-primary hover:text-primary"
+              >
+                Host a Match
+              </Button>
+            </Link>
           </div>
         </div>
 
