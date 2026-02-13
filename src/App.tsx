@@ -4,9 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import HostTournament from "./pages/HostTournament";
-import Tournaments from "./pages/Tournaments";
-import TournamentDetail from "./pages/TournamentDetail";
+import HostTournament from "./features/tournaments/pages/HostTournament";
+import Tournaments from "./features/tournaments/pages/Tournaments";
+import TournamentDetail from "./features/tournaments/pages/TournamentDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

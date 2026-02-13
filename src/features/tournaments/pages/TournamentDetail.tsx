@@ -1,78 +1,23 @@
-import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Trophy, Users, Calendar, Clock, Youtube, CreditCard, Gamepad2, Target, UserPlus, Plus, Trash2 } from "lucide-react";
+import { Trophy, Users, Calendar, Clock, Youtube, CreditCard, Gamepad2, Target } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { getTournament, registerTeam } from "@/services/api";
+import { getTournament } from "../services/api";
+import RegistrationDialog from "../components/RegistrationDialog";
 
 const TournamentDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { toast } = useToast();
-  const [registerOpen, setRegisterOpen] = useState(false);
-  const [teamName, setTeamName] = useState("");
-  const [iglName, setIglName] = useState("");
-  const [iglPlayerId, setIglPlayerId] = useState("");
-  const [players, setPlayers] = useState([{ name: "", playerId: "" }, { name: "", playerId: "" }, { name: "", playerId: "" }]);
 
   const { data: tournament, isLoading, error } = useQuery({
     queryKey: ["tournament", id],
     queryFn: () => getTournament(id!),
     enabled: !!id,
   });
-
-  const addPlayer = () => {
-    if (players.length < 5) {
-      setPlayers([...players, { name: "", playerId: "" }]);
-    }
-  };
-
-  const removePlayer = (index: number) => {
-    if (players.length > 1) {
-      setPlayers(players.filter((_, i) => i !== index));
-    }
-  };
-
-  const updatePlayer = (index: number, field: "name" | "playerId", value: string) => {
-    const updated = [...players];
-    updated[index][field] = value;
-    setPlayers(updated);
-  };
-
-  const handleRegister = async () => {
-    if (!teamName || !iglName || !iglPlayerId) {
-      toast({ title: "Missing fields", description: "Please fill in team name, IGL name, and IGL player ID.", variant: "destructive" });
-      return;
-    }
-    const validPlayers = players.filter(p => p.name && p.playerId);
-    if (validPlayers.length === 0) {
-      toast({ title: "No players", description: "Add at least one squad member.", variant: "destructive" });
-      return;
-    }
-    try {
-      await registerTeam({
-        tournamentId: id!,
-        teamName,
-        iglName,
-        iglPlayerId,
-        players: validPlayers,
-        paymentStatus: "pending",
-        registeredAt: new Date().toISOString(),
-      });
-      toast({ title: "Registered!", description: `Team "${teamName}" has been registered. Complete payment to confirm.` });
-      setRegisterOpen(false);
-    } catch {
-      toast({ title: "Error", description: "Registration failed. Make sure the backend is running.", variant: "destructive" });
-    }
-  };
 
   if (isLoading) {
     return (
@@ -219,65 +164,7 @@ const TournamentDetail = () => {
           </Card>
 
           {/* Register Button */}
-          <Dialog open={registerOpen} onOpenChange={setRegisterOpen}>
-            <DialogTrigger asChild>
-              <Button className="w-full neon-glow font-display font-bold uppercase tracking-wider text-lg py-6">
-                <UserPlus className="h-5 w-5 mr-2" /> Register Your Team
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="font-display">Register Your Squad</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium">Team Name *</label>
-                  <Input placeholder="e.g., Shadow Wolves" value={teamName} onChange={e => setTeamName(e.target.value)} />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-sm font-medium">IGL Name *</label>
-                    <Input placeholder="Leader name" value={iglName} onChange={e => setIglName(e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">IGL Player ID *</label>
-                    <Input placeholder="In-game ID" value={iglPlayerId} onChange={e => setIglPlayerId(e.target.value)} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium">Squad Members</label>
-                    {players.length < 5 && (
-                      <Button type="button" variant="ghost" size="sm" onClick={addPlayer}>
-                        <Plus className="h-3 w-3 mr-1" /> Add
-                      </Button>
-                    )}
-                  </div>
-                  {players.map((p, i) => (
-                    <div key={i} className="flex gap-2 mb-2">
-                      <Input placeholder={`Player ${i + 1} name`} value={p.name} onChange={e => updatePlayer(i, "name", e.target.value)} />
-                      <Input placeholder="Player ID" value={p.playerId} onChange={e => updatePlayer(i, "playerId", e.target.value)} />
-                      {players.length > 1 && (
-                        <Button type="button" variant="ghost" size="icon" onClick={() => removePlayer(i)}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="p-3 rounded-lg bg-primary/10 border border-primary/20 text-sm">
-                  <p className="text-muted-foreground">Pay via UPI: <span className="font-bold text-foreground">{tournament?.upiId || "N/A"}</span></p>
-                  <p className="text-xs text-muted-foreground mt-1">Send payment to the UPI ID above and register your team.</p>
-                </div>
-
-                <Button className="w-full neon-glow font-display" onClick={handleRegister}>
-                  Submit Registration
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <RegistrationDialog tournamentId={id!} tournament={tournament} />
         </div>
       </main>
       <Footer />

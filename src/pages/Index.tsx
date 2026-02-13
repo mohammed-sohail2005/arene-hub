@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import TournamentsSection from "@/components/TournamentsSection";
+import TournamentsSection from "@/features/tournaments/components/TournamentsSection";
 import GamesSection from "@/components/GamesSection";
 import HowItWorks from "@/components/HowItWorks";
 import Footer from "@/components/Footer";

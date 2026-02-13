@@ -36,7 +36,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { createTournament } from "@/services/api";
+import { createTournament } from "../services/api";
 
 const bgmiMaps = ["Erangel", "Miramar", "Sanhok", "Vikendi", "Livik", "Karakin"];
 const freefireMaps = ["Bermuda", "Purgatory", "Kalahari", "Alpine", "Nexterra"];
@@ -121,12 +121,9 @@ const HostTournament = () => {
         matchDate: data.matchDate.toISOString(),
         roomOpenTime: data.roomOpenTime,
         matchStartTime: data.matchStartTime,
-        roomId: "",
-        roomPassword: "",
         maxPlayers: data.maxPlayers,
         entryFee: data.entryFee,
         upiId: data.upiId,
-        registerAmount: "0",
         youtubeChannel: data.youtubeChannel,
         killPoints: data.killPoints,
         rankPoints: data.rankPoints,
@@ -139,7 +136,7 @@ const HostTournament = () => {
         title: "Tournament Created!",
         description: `Your ${data.game.toUpperCase()} tournament "${data.tournamentName}" has been created successfully.`,
       });
-      navigate("/");
+      navigate("/tournaments");
     } catch (error) {
       toast({
         title: "Error",
