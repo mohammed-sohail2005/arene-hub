@@ -48,13 +48,12 @@ const RegistrationDialog = ({ tournamentId, tournament }: RegistrationDialogProp
 
     try {
       await registerTeam({
-        tournamentId,
-        teamName,
-        iglName,
-        iglPlayerId,
+        tournament_id: tournamentId,
+        team_name: teamName,
+        igl_name: iglName,
+        igl_player_id: iglPlayerId,
         players,
-        paymentStatus: "pending",
-        registeredAt: new Date().toISOString(),
+        payment_status: "pending",
       });
       toast({ title: "Registered!", description: `Squad "${teamName}" has been registered. Complete payment to confirm.` });
       setOpen(false);
@@ -63,7 +62,7 @@ const RegistrationDialog = ({ tournamentId, tournament }: RegistrationDialogProp
       setIglPlayerId("");
       setPlayers([{ name: "", playerId: "" }, { name: "", playerId: "" }, { name: "", playerId: "" }]);
     } catch {
-      toast({ title: "Error", description: "Registration failed. Make sure the backend is running.", variant: "destructive" });
+      toast({ title: "Error", description: "Registration failed. Please try again.", variant: "destructive" });
     }
   };
 
@@ -79,13 +78,11 @@ const RegistrationDialog = ({ tournamentId, tournament }: RegistrationDialogProp
           <DialogTitle className="font-display">Register Your Squad</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          {/* Squad Name */}
           <div>
             <label className="text-sm font-medium">Squad Name *</label>
             <Input placeholder="e.g., Shadow Wolves" value={teamName} onChange={e => setTeamName(e.target.value)} />
           </div>
 
-          {/* IGL (Player 1) */}
           <div className="p-3 rounded-lg border border-primary/20 bg-primary/5">
             <label className="text-sm font-medium text-primary mb-2 block">Player 1 — IGL (In-Game Leader) *</label>
             <div className="grid grid-cols-2 gap-3">
@@ -94,7 +91,6 @@ const RegistrationDialog = ({ tournamentId, tournament }: RegistrationDialogProp
             </div>
           </div>
 
-          {/* Players 2-4 */}
           {players.map((p, i) => (
             <div key={i}>
               <label className="text-sm font-medium mb-1 block">Player {i + 2} *</label>
@@ -105,15 +101,14 @@ const RegistrationDialog = ({ tournamentId, tournament }: RegistrationDialogProp
             </div>
           ))}
 
-          {/* Payment Info */}
           <div className="p-3 rounded-lg bg-primary/10 border border-primary/20 text-sm">
             <p className="font-medium text-foreground mb-1">💳 Payment Required</p>
             <p className="text-muted-foreground">
-              Pay the entry fee via UPI to: <span className="font-bold text-foreground">{tournament.upiId || "N/A"}</span>
+              Pay the entry fee via UPI to: <span className="font-bold text-foreground">{tournament.upi_id || "N/A"}</span>
             </p>
-            {tournament.entryFee && (
+            {tournament.entry_fee && (
               <p className="text-muted-foreground mt-1">
-                Entry Fee: <span className="font-bold text-foreground">₹{tournament.entryFee}</span> per team
+                Entry Fee: <span className="font-bold text-foreground">₹{tournament.entry_fee}</span> per team
               </p>
             )}
             <p className="text-xs text-muted-foreground mt-2">Complete payment before registering. Your team will be verified by the host.</p>

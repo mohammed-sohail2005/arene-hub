@@ -32,7 +32,7 @@ const Tournaments = () => {
 
         {error && (
           <div className="text-center py-20">
-            <p className="text-muted-foreground">Unable to load tournaments. Make sure the backend is running.</p>
+            <p className="text-muted-foreground">Unable to load tournaments. Please try again later.</p>
           </div>
         )}
 
@@ -44,7 +44,7 @@ const Tournaments = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tournaments?.map((t) => (
-            <Link key={t._id} to={`/tournament/${t._id}`} className="group">
+            <Link key={t.id} to={`/tournament/${t.id}`} className="group">
               <div className="card-hover rounded-lg border border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden p-5">
                 <div className="flex items-center justify-between mb-3">
                   <span className="font-body text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -56,28 +56,28 @@ const Tournaments = () => {
                 </div>
 
                 <h3 className="font-display text-lg font-bold uppercase tracking-wide text-foreground mb-4 group-hover:text-primary transition-colors">
-                  {t.tournamentName}
+                  {t.tournament_name}
                 </h3>
 
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="rounded-md bg-secondary/50 p-2.5 text-center">
                     <Trophy className="mx-auto mb-1 h-4 w-4 text-gold" />
-                    <div className="font-display text-sm font-bold text-foreground">₹{t.prizePool}</div>
+                    <div className="font-display text-sm font-bold text-foreground">₹{t.prize_pool}</div>
                     <div className="font-body text-[10px] uppercase text-muted-foreground">Prize</div>
                   </div>
                   <div className="rounded-md bg-secondary/50 p-2.5 text-center">
                     <Calendar className="mx-auto mb-1 h-4 w-4 text-neon-purple" />
-                    <div className="font-display text-sm font-bold text-foreground">{format(new Date(t.matchDate), "MMM dd")}</div>
+                    <div className="font-display text-sm font-bold text-foreground">{format(new Date(t.match_date), "MMM dd")}</div>
                     <div className="font-body text-[10px] uppercase text-muted-foreground">Date</div>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground flex items-center gap-1">
-                    <CreditCard className="h-3 w-3" /> {t.entryFee ? `₹${t.entryFee}` : "Free"}
+                    <CreditCard className="h-3 w-3" /> {t.entry_fee ? `₹${t.entry_fee}` : "Free"}
                   </span>
                   <span className="text-muted-foreground flex items-center gap-1">
-                    <Users className="h-3 w-3" /> {t.registeredTeams?.length || 0} teams
+                    <Users className="h-3 w-3" /> {t.registered_teams?.length || 0} teams
                   </span>
                 </div>
 

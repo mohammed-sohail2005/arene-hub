@@ -14,7 +14,119 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      registered_teams: {
+        Row: {
+          id: string
+          igl_name: string
+          igl_player_id: string
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          players: Json
+          registered_at: string
+          team_name: string
+          tournament_id: string
+        }
+        Insert: {
+          id?: string
+          igl_name: string
+          igl_player_id: string
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          players?: Json
+          registered_at?: string
+          team_name: string
+          tournament_id: string
+        }
+        Update: {
+          id?: string
+          igl_name?: string
+          igl_player_id?: string
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          players?: Json
+          registered_at?: string
+          team_name?: string
+          tournament_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registered_teams_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournaments: {
+        Row: {
+          created_at: string
+          description: string | null
+          entry_fee: string | null
+          game: Database["public"]["Enums"]["game_type"]
+          id: string
+          kill_points: string | null
+          map: string
+          match_date: string
+          match_start_time: string
+          max_players: string
+          owner_name: string
+          prize_pool: string
+          profile_photo: string | null
+          rank_points: string | null
+          register_amount: string | null
+          room_id: string | null
+          room_open_time: string
+          room_password: string | null
+          tournament_name: string
+          upi_id: string
+          youtube_channel: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          entry_fee?: string | null
+          game: Database["public"]["Enums"]["game_type"]
+          id?: string
+          kill_points?: string | null
+          map: string
+          match_date: string
+          match_start_time: string
+          max_players: string
+          owner_name: string
+          prize_pool: string
+          profile_photo?: string | null
+          rank_points?: string | null
+          register_amount?: string | null
+          room_id?: string | null
+          room_open_time: string
+          room_password?: string | null
+          tournament_name: string
+          upi_id: string
+          youtube_channel?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          entry_fee?: string | null
+          game?: Database["public"]["Enums"]["game_type"]
+          id?: string
+          kill_points?: string | null
+          map?: string
+          match_date?: string
+          match_start_time?: string
+          max_players?: string
+          owner_name?: string
+          prize_pool?: string
+          profile_photo?: string | null
+          rank_points?: string | null
+          register_amount?: string | null
+          room_id?: string | null
+          room_open_time?: string
+          room_password?: string | null
+          tournament_name?: string
+          upi_id?: string
+          youtube_channel?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +135,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      game_type: "bgmi" | "freefire"
+      payment_status: "pending" | "paid"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +263,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      game_type: ["bgmi", "freefire"],
+      payment_status: ["pending", "paid"],
+    },
   },
 } as const
