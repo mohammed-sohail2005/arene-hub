@@ -114,22 +114,21 @@ const HostTournament = () => {
     try {
       const tournamentPayload: Parameters<typeof createTournament>[0] = {
         game: data.game,
-        ownerName: data.ownerName,
-        tournamentName: data.tournamentName,
+        owner_name: data.ownerName,
+        tournament_name: data.tournamentName,
         map: data.map,
-        prizePool: data.prizePool,
-        matchDate: data.matchDate.toISOString(),
-        roomOpenTime: data.roomOpenTime,
-        matchStartTime: data.matchStartTime,
-        maxPlayers: data.maxPlayers,
-        entryFee: data.entryFee,
-        upiId: data.upiId,
-        youtubeChannel: data.youtubeChannel,
-        killPoints: data.killPoints,
-        rankPoints: data.rankPoints,
+        prize_pool: data.prizePool,
+        match_date: data.matchDate.toISOString(),
+        room_open_time: data.roomOpenTime,
+        match_start_time: data.matchStartTime,
+        max_players: data.maxPlayers,
+        entry_fee: data.entryFee,
+        upi_id: data.upiId,
+        youtube_channel: data.youtubeChannel,
+        kill_points: data.killPoints,
+        rank_points: data.rankPoints,
         description: data.description,
-        profilePhoto,
-        createdAt: new Date().toISOString(),
+        profile_photo: profilePhoto,
       };
       await createTournament(tournamentPayload);
       toast({
@@ -140,7 +139,7 @@ const HostTournament = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create tournament. Make sure your backend is running.",
+        description: "Failed to create tournament. Please try again.",
         variant: "destructive",
       });
     }

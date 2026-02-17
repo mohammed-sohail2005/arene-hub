@@ -1,77 +1,90 @@
-// Configure your backend API URL here
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
-export interface Tournament {
-  _id?: string;
-  game: "bgmi" | "freefire";
-  ownerName: string;
-  tournamentName: string;
-  map: string;
-  prizePool: string;
-  matchDate: string;
-  roomOpenTime: string;
-  matchStartTime: string;
-  roomId?: string;
-  roomPassword?: string;
-  maxPlayers: string;
-  entryFee?: string;
-  upiId: string;
-  registerAmount?: string;
-  youtubeChannel?: string;
-  killPoints?: string;
-  rankPoints?: string;
-  description?: string;
-  profilePhoto?: string | null;
-  createdAt: string;
-  registeredTeams?: RegisteredTeam[];
-}
+import { supabase } from "@/integrations/supabase/client";
 
 export interface Player {
   name: string;
   playerId: string;
 }
 
+export interface Tournament {
+  id: string;
+  game: "bgmi" | "freefire";
+  owner_name: string;
+  tournament_name: string;
+  map: string;
+  prize_pool: string;
+  match_date: string;
+  room_open_time: string;
+  match_start_time: string;
+  room_id?: string | null;
+  room_password?: string | null;
+  max_players: string;
+  entry_fee?: string | null;
+  upi_id: string;
+  register_amount?: string | null;
+  youtube_channel?: string | null;
+  kill_points?: string | null;
+  rank_points?: string | null;
+  description?: string | null;
+  profile_photo?: string | null;
+  created_at: string;
+  registered_teams?: RegisteredTeam[];
+}
+
 export interface RegisteredTeam {
-  _id?: string;
-  tournamentId: string;
-  teamName: string;
-  iglName: string;
-  iglPlayerId: string;
+  id: string;
+  tournament_id: string;
+  team_name: string;
+  igl_name: string;
+  igl_player_id: string;
   players: Player[];
-  paymentStatus: "pending" | "paid";
-  registeredAt: string;
+  payment_status: "pending" | "paid";
+  registered_at: string;
 }
 
 // Tournament APIs
-export const createTournament = async (data: Omit<Tournament, "_id" | "registeredTeams">): Promise<Tournament> => {
-  const res = await fetch(`${API_BASE_URL}/tournaments`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to create tournament");
-  return res.json();
+export const createTournament = async (data: Omit<Tournament, "id" | "registered_teams" | "created_at">): Promise<Tournament> => {
+  const { data: result, error } = await supabase
+    .from("tournaments")
+    .insert(data as any)
+    .select()
+    .single();
+  if (error) throw error;
+  return result as unknown as Tournament;
 };
 
 export const getTournaments = async (): Promise<Tournament[]> => {
-  const res = await fetch(`${API_BASE_URL}/tournaments`);
-  if (!res.ok) throw new Error("Failed to fetch tournaments");
-  return res.json();
+  const { data, error } = await supabase
+    .from("tournaments")
+    .select("*, registered_teams(*)")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data || []) as unknown as Tournament[];
 };
 
 export const getTournament = async (id: string): Promise<Tournament> => {
-  const res = await fetch(`${API_BASE_URL}/tournaments/${id}`);
-  if (!res.ok) throw new Error("Failed to fetch tournament");
-  return res.json();
+  const { data, error } = await supabase
+    .from("tournaments")
+    .select("*, registered_teams(*)")
+    .eq("id", id)
+    .single();
+  if (error) throw error;
+  return data as unknown as Tournament;
 };
 
-// Team Registration APIs
-export const registerTeam = async (data: Omit<RegisteredTeam, "_id">): Promise<RegisteredTeam> => {
-  const res = await fetch(`${API_BASE_URL}/tournaments/${data.tournamentId}/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to register team");
-  return res.json();
+// Team Registration
+export const registerTeam = async (data: Omit<RegisteredTeam, "id" | "registered_at">): Promise<RegisteredTeam> => {
+  const { data: result, error } = await supabase
+    .from("registered_teams")
+    .insert({
+      tournament_id: data.tournament_id,
+      team_name: data.team_name,
+      igl_name: data.igl_name,
+      igl_player_id: data.igl_player_id,
+      players: data.players as any,
+      payment_status: data.payment_status,
+    } as any)
+    .select()
+    .single();
+  if (error) throw error;
+  return result as unknown as RegisteredTeam;
 };
