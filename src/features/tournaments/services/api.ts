@@ -53,9 +53,11 @@ export const createTournament = async (data: Omit<Tournament, "id" | "registered
 };
 
 export const getTournaments = async (): Promise<Tournament[]> => {
+  const today = new Date().toISOString().split("T")[0];
   const { data, error } = await supabase
     .from("tournaments")
     .select("*, registered_teams(*)")
+    .gte("match_date", today)
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data || []) as unknown as Tournament[];

@@ -103,15 +103,20 @@ const RegistrationDialog = ({ tournamentId, tournament }: RegistrationDialogProp
 
           <div className="p-3 rounded-lg bg-primary/10 border border-primary/20 text-sm">
             <p className="font-medium text-foreground mb-1">💳 Payment Required</p>
-            <p className="text-muted-foreground">
-              Pay the entry fee via UPI to: <span className="font-bold text-foreground">{tournament.upi_id || "N/A"}</span>
-            </p>
             {tournament.entry_fee && (
               <p className="text-muted-foreground mt-1">
                 Entry Fee: <span className="font-bold text-foreground">₹{tournament.entry_fee}</span> per team
               </p>
             )}
-            <p className="text-xs text-muted-foreground mt-2">Complete payment before registering. Your team will be verified by the host.</p>
+            <p className="text-xs text-muted-foreground mt-2">Click the button below to pay via your UPI app. Payment will be verified by the host.</p>
+            {tournament.upi_id && (
+              <a
+                href={`upi://pay?pa=${encodeURIComponent(tournament.upi_id)}&pn=${encodeURIComponent(tournament.owner_name)}&am=${tournament.entry_fee || tournament.register_amount || "0"}&cu=INR&tn=${encodeURIComponent(`Registration for ${tournament.tournament_name}`)}`}
+                className="mt-2 flex items-center justify-center gap-2 w-full rounded-md bg-primary py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                💰 Pay ₹{tournament.entry_fee || tournament.register_amount || "0"} via UPI
+              </a>
+            )}
           </div>
 
           <Button className="w-full neon-glow font-display" onClick={handleRegister}>
