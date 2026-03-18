@@ -12,7 +12,6 @@ import HostTournamentPage from './components/HostTournamentPage';
 import HostManagementPage from './components/HostManagementPage';
 import TeamPortalPage from './components/TeamPortalPage';
 import SplashScreen from './components/SplashScreen';
-import ErrorBoundary from './components/ErrorBoundary';
 import ContactSection from './components/ContactSection';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
@@ -156,9 +155,8 @@ function App() {
                     onHostPageClick={handleHostPageClick}
                     onTeamPortalClick={handleTeamPortalClick}
                 />
-                <ErrorBoundary>
-                    <main>
-                        <Routes>
+                <main>
+                    <Routes>
                             <Route path="/" element={
                                 <>
                                     <Hero onHostClick={() => setIsHostModalOpen(true)} onMultiClick={handleHostPageClick} />
@@ -203,7 +201,6 @@ function App() {
                             <Route path="*" element={<NotFoundPage />} />
                         </Routes>
                     </main>
-                </ErrorBoundary>
                 <Footer />
 
                 <HostModal
