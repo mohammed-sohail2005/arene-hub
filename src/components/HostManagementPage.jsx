@@ -806,7 +806,7 @@ const HostManagementPage = ({ tournament: initialTournament, onBack }) => {
                 {/* Leaderboard Section */}
                 <PointsLeaderboard 
                     hostCode={hostCode} 
-                    tournamentName={tournament?.name} 
+                    tournamentName={initialTournament?.tournament_name || matches[0]?.tournament_name} 
                     games={matches.length}
                     refreshTrigger={leaderboardRefresh}
                 />
