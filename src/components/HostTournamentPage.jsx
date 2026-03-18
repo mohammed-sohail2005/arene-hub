@@ -36,6 +36,7 @@ const HostTournamentPage = ({ onBack }) => {
     const [matchMaps, setMatchMaps] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [createdCode, setCreatedCode] = useState(null);
+    const [createdTournamentId, setCreatedTournamentId] = useState(null);
     const [photoPreview, setPhotoPreview] = useState(null);
     const [photoFile, setPhotoFile] = useState(null);
     const [dateChips, setDateChips] = useState([]);
@@ -211,12 +212,16 @@ const HostTournamentPage = ({ onBack }) => {
                 point_system: formData.pointSystem,
             }));
 
-            let result = await supabase.from('tournaments').insert(
+            let { data: insertedData, error: insertError } = await supabase.from('tournaments').insert(
                 baseEntries.map(e => ({ ...e, host_code: hostCode }))
-            );
+            ).select();
 
-            if (result.error) throw result.error;
+            if (insertError) throw insertError;
             setCreatedCode(hostCode);
+            // Capture the first match ID to use for the registration link
+            if (insertedData && insertedData.length > 0) {
+                setCreatedTournamentId(insertedData[0].id);
+            }
         } catch (error) {
             console.error('Error creating tournament:', error);
             toast.error('Failed to create tournament: ' + (error.message || 'Unknown error'));
@@ -240,6 +245,22 @@ const HostTournamentPage = ({ onBack }) => {
                         <div style={{ fontSize: '3rem', fontWeight: 900, letterSpacing: '8px', color: 'var(--primary)' }}>{createdCode}</div>
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '10px' }}>Share this code to track registrations</p>
                     </div>
+
+                    <button 
+                        className="btn hover-glow" 
+                        style={{ 
+                            width: '100%', padding: '16px', marginBottom: '16px',
+                            background: 'rgba(0,255,156,0.08)', border: '1px solid var(--primary)',
+                            color: 'var(--primary)', fontWeight: 800
+                        }} 
+                        onClick={() => {
+                            const link = `${window.location.origin}/register/${createdTournamentId}`;
+                            navigator.clipboard.writeText(link);
+                            toast.success('Registration Link Copied!');
+                        }}
+                    >
+                        <i className="fas fa-link" style={{ marginRight: '10px' }}></i> COPY REGISTRATION LINK
+                    </button>
                     <button className="btn btn-primary" style={{ width: '100%', padding: '16px' }} onClick={onBack}>
                         <i className="fas fa-arrow-left" style={{ marginRight: '10px' }}></i> BACK TO HOME
                     </button>

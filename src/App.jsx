@@ -16,6 +16,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ContactSection from './components/ContactSection';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
+import DirectRegisterPage from './components/DirectRegisterPage';
 import NotFoundPage from './components/NotFoundPage';
 import { Analytics } from '@vercel/analytics/react';
 import { supabase } from './lib/supabase';
@@ -191,6 +192,10 @@ function App() {
 
                             <Route path="/team-portal" element={
                                 <TeamPortalPage onBack={handleBackToList} />
+                            } />
+
+                            <Route path="/register/:id" element={
+                                <DirectRegisterPage onBack={handleBackToList} />
                             } />
 
                             <Route path="/privacy" element={<PrivacyPolicy />} />

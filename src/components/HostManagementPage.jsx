@@ -569,22 +569,45 @@ const HostManagementPage = ({ tournament: initialTournament, onBack }) => {
                     Host Code: <span style={{ color: 'var(--primary)', fontWeight: 800, letterSpacing: '3px' }}>{hostCode}</span>
                 </p>
 
-                <button
-                    className="btn hover-glow"
-                    onClick={() => setCompletingTournament(true)}
-                    style={{
-                        background: 'rgba(0, 255, 156, 0.1)',
-                        border: '1px solid #00ff9c',
-                        color: '#00ff9c',
-                        padding: '10px 24px',
-                        borderRadius: '12px',
-                        fontSize: '0.85rem',
-                        fontWeight: 800
-                    }}
-                >
-                    <i className="fas fa-check-double" style={{ marginRight: '8px' }}></i>
-                    COMPLETE & DELETE TOURNAMENT
-                </button>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <button
+                        className="btn hover-glow"
+                        onClick={() => {
+                            const link = `${window.location.origin}/register/${matches[0]?.id}`;
+                            navigator.clipboard.writeText(link);
+                            toast.success('Registration Link Copied!');
+                        }}
+                        style={{
+                            background: 'rgba(0, 255, 156, 0.1)',
+                            border: '1px solid #00ff9c',
+                            color: '#00ff9c',
+                            padding: '10px 24px',
+                            borderRadius: '12px',
+                            fontSize: '0.85rem',
+                            fontWeight: 800
+                        }}
+                    >
+                        <i className="fas fa-link" style={{ marginRight: '8px' }}></i>
+                        COPY REGISTRATION LINK
+                    </button>
+
+                    <button
+                        className="btn hover-glow"
+                        onClick={() => setCompletingTournament(true)}
+                        style={{
+                            background: 'rgba(255, 77, 77, 0.1)',
+                            border: '1px solid #ff4d4d',
+                            color: '#ff4d4d',
+                            padding: '10px 24px',
+                            borderRadius: '12px',
+                            fontSize: '0.85rem',
+                            fontWeight: 800
+                        }}
+                    >
+                        <i className="fas fa-check-double" style={{ marginRight: '8px' }}></i>
+                        COMPLETE & DELETE TOURNAMENT
+                    </button>
+                </div>
             </div>
 
             {/* Stats Row */}
