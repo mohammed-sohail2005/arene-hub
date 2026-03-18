@@ -13,6 +13,7 @@ const TeamPortalPage = ({ onBack }) => {
     const [rankScreenshots, setRankScreenshots] = useState({});
     const [uploadingRank, setUploadingRank] = useState(null);
     const [refreshLeaderboard, setRefreshLeaderboard] = useState(0);
+    const [allQualifiedTeams, setAllQualifiedTeams] = useState([]);
 
     const handleRankUpload = async (matchId, event) => {
         const file = event.target.files[0];
@@ -140,6 +141,16 @@ const TeamPortalPage = ({ onBack }) => {
                 });
                 setRankScreenshots(ranksMap);
             }
+
+            // Also fetch all qualified teams for this host (for sequential slotting in finals)
+            const { data: qualifiedTeams } = await supabase
+                .from('registrations')
+                .select('id, qualified_at, qualified_upto')
+                .eq('host_code', teamData.host_code)
+                .not('qualified_at', 'is', null)
+                .order('qualified_at', { ascending: true });
+            
+            setAllQualifiedTeams(qualifiedTeams || []);
 
         } catch (err) {
             console.error('Error fetching team data:', err);
@@ -658,14 +669,28 @@ const TeamPortalPage = ({ onBack }) => {
                             if (matchStage.includes('Qualifier')) {
                                 const groupNumInStage = parseInt(matchStage.replace('Qualifier ', ''));
                                 const maxTeamsPerGroup = match.max_teams || 25;
-                                teamQualifierGroup = Math.ceil((team.slot_number || 1) / maxTeamsPerGroup);
                                 
-                                // Only qualified if this is the team's assigned group
+                                // Qualifier partitioning: Team 1-25 -> Group 1, 26-50 -> Group 2, etc.
+                                teamQualifierGroup = Math.ceil((team.slot_number || 1) / maxTeamsPerGroup);
                                 isQualified = groupNumInStage === teamQualifierGroup;
                             } else if (matchStage.includes('Semi-Final')) {
                                 isQualified = team.qualified_upto === 'Semi-Final' || team.qualified_upto === 'Final';
+                                
+                                // Sequential slotting for Semi-Finals: based on when they were qualified
+                                if (isQualified) {
+                                    const stageQualifiedTeams = allQualifiedTeams.filter(t => t.qualified_upto === 'Semi-Final' || t.qualified_upto === 'Final');
+                                    const idx = stageQualifiedTeams.findIndex(t => t.id === team.id);
+                                    if (idx !== -1) team.slot_number = idx + 1;
+                                }
                             } else if (matchStage.includes('Final')) {
                                 isQualified = team.qualified_upto === 'Final';
+                                
+                                // Sequential slotting for Finals: based on when they were qualified
+                                if (isQualified) {
+                                    const stageQualifiedTeams = allQualifiedTeams.filter(t => t.qualified_upto === 'Final');
+                                    const idx = stageQualifiedTeams.findIndex(t => t.id === team.id);
+                                    if (idx !== -1) team.slot_number = idx + 1;
+                                }
                             }
                         }
 

@@ -694,19 +694,28 @@ const HostTournamentPage = ({ onBack }) => {
                 </div>
             </div>
 
-            {/* Submit */}
-            <button
-                className="btn btn-primary"
-                style={{ width: '100%', padding: '20px', fontSize: '1.2rem', fontWeight: 800 }}
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-            >
-                {isSubmitting ? (
-                    <><i className="fas fa-circle-notch fa-spin" style={{ marginRight: '10px' }}></i> CREATING...</>
-                ) : (
-                    <><i className="fas fa-rocket" style={{ marginRight: '10px' }}></i> CREATE TOURNAMENT SERIES</>
-                )}
-            </button>
+            {/* Navigation & Submit */}
+            <div style={{ display: 'flex', gap: '16px', marginTop: '40px' }}>
+                <button
+                    className="btn btn-outline"
+                    style={{ flex: 1, padding: '20px', fontSize: '1rem', fontWeight: 800 }}
+                    onClick={onBack}
+                >
+                    <i className="fas fa-arrow-left" style={{ marginRight: '10px' }}></i> BACK TO HOME
+                </button>
+                <button
+                    className="btn btn-primary"
+                    style={{ flex: 2, padding: '20px', fontSize: '1.2rem', fontWeight: 800 }}
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? (
+                        <><i className="fas fa-circle-notch fa-spin" style={{ marginRight: '10px' }}></i> CREATING...</>
+                    ) : (
+                        <><i className="fas fa-rocket" style={{ marginRight: '10px' }}></i> CREATE TOURNAMENT SERIES</>
+                    )}
+                </button>
+            </div>
         </div>
     );
 };

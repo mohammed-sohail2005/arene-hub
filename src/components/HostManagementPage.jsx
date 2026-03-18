@@ -167,7 +167,7 @@ const HostManagementPage = ({ tournament: initialTournament, onBack }) => {
 
             if (teamData) {
                 const teamsWithSlots = (teamData || [])
-                    .filter(t => t.status !== 'kicked')
+                    .filter(t => t.status !== 'kicked' && t.status !== 'disqualified')
                     .map((t, idx) => ({ 
                         ...t, 
                         slot_number: t.slot_number || idx + 1 
@@ -286,14 +286,15 @@ const HostManagementPage = ({ tournament: initialTournament, onBack }) => {
                 .update({ 
                     qualified_upto: stage,
                     selection_message: msg,
-                    status: 'Active'
+                    status: 'Active',
+                    qualified_at: new Date().toISOString()
                 })
                 .eq('id', teamId);
 
             if (error) throw error;
             
-            setTeams(prev => prev.map(t => t.id === teamId ? { ...t, qualified_upto: stage, selection_message: msg, status: 'Active' } : t));
-            toast.success(`Success! Squad is now qualified for ${stage}.`);
+            setTeams(prev => prev.filter(t => t.id !== teamId)); // Remove from view instead of just updating
+            toast.success(`Success! Squad is now qualified for ${stage}. They will now move to the next stage list.`);
         } catch (err) {
             console.error('Error qualifying team:', err);
             toast.error(`Qualification failed!\n\n${err.message}`);
@@ -313,8 +314,8 @@ const HostManagementPage = ({ tournament: initialTournament, onBack }) => {
 
             if (error) throw error;
             
-            setTeams(prev => prev.map(t => t.id === teamId ? { ...t, status: 'disqualified', selection_message: msg } : t));
-            toast.success("Squad has been disqualified and notified.");
+            setTeams(prev => prev.filter(t => t.id !== teamId));
+            toast.success("Squad has been disqualified and removed from your view.");
         } catch (err) {
             console.error('Error disqualifying team:', err);
             toast.error(`Disqualification failed!\n\n${err.message}`);
