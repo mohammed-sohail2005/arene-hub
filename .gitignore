@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Env files (Critical Security)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temp/Drafts
+logs.txt
+martbridge/
+src_old/

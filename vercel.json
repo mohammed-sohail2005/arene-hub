@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/dodo/(.*)",
+      "destination": "https://live.dodopayments.com/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

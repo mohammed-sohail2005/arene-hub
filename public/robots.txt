@@ -1,14 +1,9 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
+# Arena Hub - Web Crawler Rules
+# https://www.robotstxt.org/
 
 User-agent: *
 Allow: /
+Disallow: /api/
+
+# Sitemap location (update domain when deployed)
+Sitemap: https://arena-hub.vercel.app/sitemap.xml
