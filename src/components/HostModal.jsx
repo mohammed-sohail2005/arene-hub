@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useToast } from './Toast';
+import bgGaming from '../assets/bg-gaming.png';
 
 const MAP_DATA = {
     bgmi: ["Erangel", "Miramar", "Sanhok", "Vikendi", "Livik", "Karakin", "Nusa", "Rondo"],
@@ -42,6 +44,9 @@ const HostModal = ({ isOpen, onClose }) => {
     const [dateChips, setDateChips] = useState([]);
     const [isEligibleForFreeTrial, setIsEligibleForFreeTrial] = useState(true);
     const [isCheckingTrial, setIsCheckingTrial] = useState(false);
+    const [createdCode, setCreatedCode] = useState(null);
+    const [createdTournamentId, setCreatedTournamentId] = useState(null);
+    const navigate = useNavigate();
 
     // Debounced check for Free Trial eligibility based on UPI ID
     useEffect(() => {
@@ -216,11 +221,15 @@ const HostModal = ({ isOpen, onClose }) => {
                 // FREE TRIAL: Insert directly into Supabase, skip Dodo Payments
                 toast.success('🎉 Free Trial Active! Creating your tournament...', 3000);
 
-                let result = await supabase.from('tournaments').insert([tournamentData]);
+                let result = await supabase.from('tournaments').insert([tournamentData]).select();
                 if (result.error) throw result.error;
 
+                if (result.data && result.data.length > 0) {
+                    setCreatedCode(hostCode);
+                    setCreatedTournamentId(result.data[0].id);
+                }
+
                 toast.success(`🎉 Tournament Created Successfully!\n\nYour Host Code is: ${hostCode}\n\nPlease keep this safe!`, 10000);
-                onClose();
             } else {
                 // PAID: Insert into DB as 'pending' and redirect to Dodo
                 toast.success(`Hosting Fee: ₹${hostingFee}. Redirecting to payment...`, 3000);
@@ -281,14 +290,63 @@ const HostModal = ({ isOpen, onClose }) => {
 
 
     return (
-        <div className="modal-overlay" style={{ display: 'flex' }} onClick={(e) => e.target.className === 'modal-overlay' && onClose()}>
-            <div className="modal glass" style={{ maxWidth: '850px', maxHeight: '90vh', overflowY: 'auto' }}>
-                <div className="modal-header">
+        <div className="modal-overlay" style={{ 
+            display: 'flex', 
+            background: `linear-gradient(rgba(10, 12, 16, 0.9), rgba(10, 12, 16, 0.9)), url(${bgGaming})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            zIndex: 9999
+        }} onClick={(e) => e.target.className === 'modal-overlay' && onClose()}>
+            
+            <div className="modal glass" style={{ maxWidth: '850px', maxHeight: '90vh', overflowY: 'auto', margin: 'auto', padding: '30px' }}>
+                <div style={{ marginBottom: '20px' }}>
+                    <button onClick={onClose} className="btn btn-outline" style={{ padding: '8px 16px', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)' }}>
+                        <i className="fas fa-arrow-left" style={{ marginRight: '8px' }}></i> BACK TO HOME
+                    </button>
+                </div>
+
+                <div className="modal-header" style={{ marginBottom: '24px' }}>
                     <h2 style={{ fontSize: '2.5rem', marginBottom: '8px' }}>Host a <span className="header-glow" style={{ color: 'var(--primary)', textTransform: 'uppercase' }}>Tournament</span></h2>
                     <p style={{ color: 'var(--text-dim)' }}>Fill in the details below to create your tournament match</p>
                 </div>
 
-                <form onSubmit={handleSubmit}>
+                {createdCode ? (
+                    <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                        <i className="fas fa-check-circle" style={{ fontSize: '4rem', color: 'var(--primary)', marginBottom: '20px' }}></i>
+                        <h2 style={{ marginBottom: '10px' }}>Tournament Created!</h2>
+                        <p style={{ color: 'var(--text-dim)', marginBottom: '30px' }}>
+                            {formData.tournamentName} • {formData.format}
+                        </p>
+                        <div style={{ background: 'rgba(0,255,156,0.1)', border: '2px dashed var(--primary)', borderRadius: '16px', padding: '30px', marginBottom: '30px' }}>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: '8px' }}>Your Host Code</div>
+                            <div style={{ fontSize: '3rem', fontWeight: 900, letterSpacing: '8px', color: 'var(--primary)' }}>{createdCode}</div>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '10px' }}>Keep this safe to manage your tournament</p>
+                        </div>
+
+                        <button 
+                            className="btn hover-glow" 
+                            style={{ 
+                                width: '100%', padding: '16px', marginBottom: '16px',
+                                background: 'rgba(0,255,156,0.08)', border: '1px solid var(--primary)',
+                                color: 'var(--primary)', fontWeight: 800
+                            }} 
+                            onClick={() => {
+                                const link = `${window.location.origin}/details/${createdTournamentId}`;
+                                navigator.clipboard.writeText(link);
+                                toast.success('Registration Link Copied!');
+                                navigate(`/details/${createdTournamentId}`);
+                                onClose();
+                            }}
+                        >
+                            <i className="fas fa-link" style={{ marginRight: '10px' }}></i> COPY REGISTRATION LINK
+                        </button>
+                        <button className="btn btn-outline" style={{ width: '100%', padding: '16px' }} onClick={onClose}>
+                             DONE
+                        </button>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit}>
 
                     {/* Game Selection */}
                     <div className="form-group-grouped">
@@ -555,6 +613,7 @@ const HostModal = ({ isOpen, onClose }) => {
                         </button>
                     </div>
                 </form>
+                )}
             </div>
         </div>
     );

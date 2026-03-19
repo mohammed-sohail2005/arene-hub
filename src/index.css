@@ -312,10 +312,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     justify-content: space-between;
 }
 
-/* ===========================
-   RESPONSIVE DESIGN
-   =========================== */
-
 /* Global Responsive Utilities */
 .grid-mobile-col {
     display: grid;
@@ -359,8 +355,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         grid-template-columns: 1fr 1fr;
     }
 }
-
-
 
 .wrap-mobile {
     display: flex;

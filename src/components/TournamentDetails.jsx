@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import RegisterModal from './RegisterModal';
 import HostHistoryModal from './HostHistoryModal';
 import { supabase } from '../lib/supabase';
 
-const TournamentDetails = ({ tournament, onBack }) => {
+const TournamentDetails = ({ tournament: propTournament, onBack }) => {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const [tournament, setTournament] = useState(propTournament);
+    const [loading, setLoading] = useState(!propTournament && !!id);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isHostHistoryOpen, setIsHostHistoryOpen] = useState(false);
     const [hostTournamentCount, setHostTournamentCount] = useState(0);
@@ -11,6 +16,57 @@ const TournamentDetails = ({ tournament, onBack }) => {
     const [maxSquads, setMaxSquads] = useState(25);
     const [hostProofs, setHostProofs] = useState([]);
     const [viewingProof, setViewingProof] = useState(null);
+
+    useEffect(() => {
+        if (propTournament) {
+            setTournament(propTournament);
+        } else if (id) {
+            fetchTournamentById(id);
+        }
+    }, [propTournament, id]);
+
+    const fetchTournamentById = async (tId) => {
+        setLoading(true);
+        try {
+            // 1. Get the initial match
+            const { data: initialMatch, error: initialError } = await supabase
+                .from('tournaments')
+                .select('*')
+                .eq('id', tId)
+                .single();
+
+            if (initialError) throw initialError;
+
+            // 2. Get all matches with the same host_code
+            const { data: allMatches, error: allMatchesError } = await supabase
+                .from('tournaments')
+                .select('*')
+                .eq('host_code', initialMatch.host_code)
+                .order('created_at', { ascending: true });
+
+            if (allMatchesError) throw allMatchesError;
+
+            // 3. Combine matches same as TournamentList
+            const first = allMatches[0];
+            const baseName = first.tournament_name.replace(/ - Match \d+$/, '').replace(/ \(Qualifier \d+\)$/, '').replace(/ \(Semi-Final\)$/, '').replace(/ \(Final.*\)$/, '');
+
+            const combined = {
+                ...first,
+                tournament_name: baseName,
+                match_count: allMatches.length,
+                matches: allMatches,
+                // Status and times logic
+                first_start_time: allMatches[0].start_time,
+                last_start_time: allMatches[allMatches.length - 1].start_time,
+            };
+
+            setTournament(combined);
+        } catch (err) {
+            console.error('Error fetching tournament by ID:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         if (tournament?.upi_id) {

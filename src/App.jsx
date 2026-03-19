@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import HostModal from './components/HostModal';
 import TournamentList from './components/TournamentList';
 import AboutSection from './components/AboutSection';
 import HostIntegritySection from './components/HostIntegritySection';
 import Footer from './components/Footer';
-import HostModal from './components/HostModal';
 import TournamentDetails from './components/TournamentDetails';
 import HostTournamentPage from './components/HostTournamentPage';
 import HostManagementPage from './components/HostManagementPage';
@@ -170,7 +170,7 @@ function App() {
                                 </>
                             } />
 
-                            <Route path="/details" element={
+                            <Route path="/details/:id?" element={
                                 <TournamentDetails
                                     tournament={selectedTournament}
                                     onBack={handleBackToList}
@@ -202,11 +202,11 @@ function App() {
                         </Routes>
                     </main>
                 <Footer />
-
                 <HostModal
                     isOpen={isHostModalOpen}
                     onClose={() => setIsHostModalOpen(false)}
                 />
+
                 <Toaster position="top-center" />
                 <Analytics />
             </div>

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useToast } from './Toast';
 
@@ -11,6 +12,7 @@ const MAP_DATA = {
 };
 
 const HostTournamentPage = ({ onBack }) => {
+    const navigate = useNavigate();
     const toast = useToast();
     const [formData, setFormData] = useState({
         name: '',
@@ -254,9 +256,10 @@ const HostTournamentPage = ({ onBack }) => {
                             color: 'var(--primary)', fontWeight: 800
                         }} 
                         onClick={() => {
-                            const link = `${window.location.origin}/register/${createdTournamentId}`;
+                            const link = `${window.location.origin}/details/${createdTournamentId}`;
                             navigator.clipboard.writeText(link);
                             toast.success('Registration Link Copied!');
+                            navigate(`/details/${createdTournamentId}`);
                         }}
                     >
                         <i className="fas fa-link" style={{ marginRight: '10px' }}></i> COPY REGISTRATION LINK
@@ -270,7 +273,18 @@ const HostTournamentPage = ({ onBack }) => {
     }
 
     return (
-        <div className="page-container">
+        <div className="page-container" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ 
+                position: 'fixed', 
+                top: 0, 
+                left: 0, 
+                right: 0, 
+                bottom: 0, 
+                background: 'radial-gradient(circle at 50% 30%, var(--primary-glow) 0%, transparent 70%)', 
+                opacity: 0.15, 
+                zIndex: -1,
+                pointerEvents: 'none'
+            }}></div>
             {/* Header */}
             <button onClick={onBack} className="btn btn-outline" style={{ marginBottom: '30px', padding: '8px 16px', fontSize: '0.8rem' }}>
                 <i className="fas fa-arrow-left" style={{ marginRight: '8px' }}></i> BACK TO HOME

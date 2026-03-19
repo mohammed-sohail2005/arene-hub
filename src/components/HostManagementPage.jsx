@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useToast } from './Toast';
 import PointsLeaderboard from './PointsLeaderboard';
 
 const HostManagementPage = ({ tournament: initialTournament, onBack }) => {
     const { code: hostCode } = useParams();
+    const navigate = useNavigate();
     const toast = useToast();
     const [teams, setTeams] = useState([]);
     const [matches, setMatches] = useState([]);
@@ -574,9 +575,10 @@ const HostManagementPage = ({ tournament: initialTournament, onBack }) => {
                     <button
                         className="btn hover-glow"
                         onClick={() => {
-                            const link = `${window.location.origin}/register/${matches[0]?.id}`;
+                            const link = `${window.location.origin}/details/${matches[0]?.id}`;
                             navigator.clipboard.writeText(link);
                             toast.success('Registration Link Copied!');
+                            navigate(`/details/${matches[0]?.id}`);
                         }}
                         style={{
                             background: 'rgba(0, 255, 156, 0.1)',
