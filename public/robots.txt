@@ -1,9 +1,5 @@
-# Arena Hub - Web Crawler Rules
-# https://www.robotstxt.org/
-
 User-agent: *
 Allow: /
-Disallow: /api/
 
-# Sitemap location (update domain when deployed)
-Sitemap: https://arena-hub.vercel.app/sitemap.xml
+# Sitemaps
+Sitemap: https://arene-hub.vercel.app/sitemap.xml

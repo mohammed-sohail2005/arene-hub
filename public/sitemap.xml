@@ -1,37 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Homepage -->
   <url>
-    <loc>https://arena-hub.vercel.app/</loc>
+    <loc>https://arene-hub.vercel.app/</loc>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-  </url>
-
-  <!-- Tournament Details -->
-  <url>
-    <loc>https://arena-hub.vercel.app/details</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Multi-Host Page -->
-  <url>
-    <loc>https://arena-hub.vercel.app/multi-host</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Team Portal -->
-  <url>
-    <loc>https://arena-hub.vercel.app/team-portal</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Host Management -->
-  <url>
-    <loc>https://arena-hub.vercel.app/host-management</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
   </url>
 </urlset>
