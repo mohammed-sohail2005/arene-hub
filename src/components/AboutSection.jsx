@@ -57,9 +57,7 @@ const AboutSection = () => {
                     THE ULTIMATE <span style={{ color: 'var(--primary)' }}>ESPORTS</span> PLATFORM
                 </h2>
                 <p style={{ color: 'var(--text-dim)', maxWidth: '650px', margin: '0 auto', lineHeight: 1.7, fontSize: '0.95rem' }}>
-                    Arena Hub is a next-gen tournament hosting and management platform built for mobile esports.
-                    Whether you're a competitive gamer or an event organizer, we've got you covered with
-                    seamless tools to host, register, and compete.
+                    Arena Hub is India's premier gateway to mobile eSports. Turn your skills into cold hard cash and join 25,000+ warriors competing for glory and guaranteed prize pools.
                 </p>
             </div>
 
@@ -88,9 +86,8 @@ const AboutSection = () => {
                             OUR <span style={{ color: 'var(--primary)' }}>MISSION</span>
                         </h3>
                         <p style={{ margin: 0, color: 'var(--text-dim)', lineHeight: 1.7, fontSize: '0.9rem' }}>
-                            To democratize esports by giving every gamer — from casual squads to competitive clans —
-                            the tools to organize, compete, and grow. No middlemen, no complex setups.
-                            Just create, share your code, and let the battles begin.
+                            To lead the future of mobile eSports by giving every gamer — from casual squads to professional clans —
+                            the stage they deserve. No middlemen, no complex setups. Just pure competition and instant rewards.
                         </p>
                     </div>
                 </div>
@@ -174,11 +171,6 @@ const AboutSection = () => {
             {/* Tech Footer */}
             <div style={{ textAlign: 'center', marginTop: '50px' }}>
                 <p style={{ color: 'var(--text-dim)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    Built with
-                    <span style={{ color: '#61DAFB', fontWeight: 700 }}>React</span>
-                    <span style={{ color: 'var(--text-dim)' }}>+</span>
-                    <span style={{ color: '#3ECF8E', fontWeight: 700 }}>Supabase</span>
-                    <span style={{ color: 'var(--text-dim)' }}>•</span>
                     Made with <i className="fas fa-heart" style={{ color: '#ff4d4d', fontSize: '0.7rem' }}></i> for the gaming community
                 </p>
             </div>
