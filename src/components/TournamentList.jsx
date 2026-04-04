@@ -207,11 +207,16 @@ const TournamentList = ({ onDetailsClick, onHostManageClick }) => {
                 runAutoCleanup(data);
             }
 
-            const liveTournaments = (data || []).filter(t => !isExpired(t));
-            const grouped = groupByHostCode(liveTournaments);
+            // Group ALL tournaments first, then filter out groups where ALL matches are expired.
+            // This preserves the full match count for multi-match tournaments.
+            const grouped = groupByHostCode(data || []);
+            const liveGrouped = grouped.filter(group => {
+                // Keep the group if at least one match is still live
+                return group.matches.some(m => !isExpired(m));
+            });
 
             // Fetch registration counts for each grouped tournament
-            const withCounts = await Promise.all(grouped.map(async (t) => {
+            const withCounts = await Promise.all(liveGrouped.map(async (t) => {
                 try {
                     const { count } = await supabase
                         .from('registrations')
