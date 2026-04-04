@@ -29,6 +29,8 @@ const HostTournamentPage = ({ onBack }) => {
         youtubeLink: '',
         maxPlayers: 100,
         maxTeams: 25,
+        registrationDeadlineDate: '',
+        registrationDeadlineTime: '',
         pointSystem: {
             kill: 1,
             rank_1: 15, rank_2: 12, rank_3: 10, rank_4: 8, rank_5: 6, rank_6: 4,
@@ -262,6 +264,9 @@ const HostTournamentPage = ({ onBack }) => {
                 is_staged: tournamentType === 'Multi-Stage',
                 num_qualifiers: tournamentType === 'Multi-Stage' ? stagedConfig.qualifierMatches : 1,
                 point_system: formData.pointSystem,
+                registration_deadline: formData.registrationDeadlineDate && formData.registrationDeadlineTime 
+                    ? `${formData.registrationDeadlineDate}T${formData.registrationDeadlineTime}` 
+                    : null,
             }));
 
             // Check if this host is eligible for the 2-month free trial (by UPI ID)
@@ -569,6 +574,24 @@ const HostTournamentPage = ({ onBack }) => {
                     </label>
                     <input className="form-control" type="number" min="1" max="100" placeholder="e.g., 25" value={formData.maxTeams} onChange={e => updateField('maxTeams', parseInt(e.target.value) || '')} style={{ maxWidth: '200px' }} />
                     <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginTop: '6px' }}>Number of teams allowed per match/qualifier group</p>
+                </div>
+
+                {/* Registration Deadline */}
+                <div style={{ marginTop: '20px', padding: '16px', background: 'rgba(255,193,7,0.05)', border: '1px solid rgba(255,193,7,0.2)', borderRadius: '12px' }}>
+                    <label style={{ display: 'block', marginBottom: '12px', fontSize: '0.85rem', color: '#FFC107', fontWeight: 700 }}>
+                        <i className="fas fa-hourglass-half" style={{ marginRight: '6px' }}></i> Registration Deadline (Optional)
+                    </label>
+                    <div className="grid-responsive" style={{ gap: '16px' }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.75rem', color: 'var(--text-dim)' }}>Deadline Date</label>
+                            <input className="form-control" type="date" value={formData.registrationDeadlineDate} onChange={e => updateField('registrationDeadlineDate', e.target.value)} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.75rem', color: 'var(--text-dim)' }}>Deadline Time</label>
+                            <input className="form-control" type="time" value={formData.registrationDeadlineTime} onChange={e => updateField('registrationDeadlineTime', e.target.value)} />
+                        </div>
+                    </div>
+                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginTop: '8px' }}>Registration will close after this date & time. Leave empty for no deadline.</p>
                 </div>
 
                 {/* Match Day */}

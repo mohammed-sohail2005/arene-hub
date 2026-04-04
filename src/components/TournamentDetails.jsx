@@ -131,6 +131,11 @@ const TournamentDetails = ({ tournament: propTournament, onBack }) => {
     const trustLevel = hostTournamentCount >= 10 ? 'Veteran' : hostTournamentCount >= 5 ? 'Trusted' : hostTournamentCount >= 2 ? 'Active' : 'New';
     const trustColor = hostTournamentCount >= 10 ? '#FFD700' : hostTournamentCount >= 5 ? '#00ff9c' : hostTournamentCount >= 2 ? '#4da6ff' : 'var(--text-dim)';
 
+    // Registration deadline check
+    const registrationDeadline = tournament.registration_deadline ? new Date(tournament.registration_deadline) : null;
+    const isDeadlinePassed = registrationDeadline ? new Date() > registrationDeadline : false;
+    const deadlineDisplay = registrationDeadline ? registrationDeadline.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) : null;
+
     return (
         <div className="page-container" style={{ maxWidth: '1200px' }}>
             {/* Back Button */}
@@ -370,8 +375,39 @@ const TournamentDetails = ({ tournament: propTournament, onBack }) => {
                 </span>
             </div>
 
+            {/* Registration Deadline */}
+            {deadlineDisplay && (
+                <div style={{
+                    padding: '16px 20px', marginBottom: '20px', borderRadius: '12px',
+                    background: isDeadlinePassed ? 'rgba(255,77,77,0.08)' : 'rgba(255,193,7,0.08)',
+                    border: `1px solid ${isDeadlinePassed ? 'rgba(255,77,77,0.3)' : 'rgba(255,193,7,0.3)'}`,
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <i className={`fas fa-hourglass-${isDeadlinePassed ? 'end' : 'half'}`} style={{ color: isDeadlinePassed ? '#ff4d4d' : '#FFC107' }}></i>
+                        <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Registration Deadline</span>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontWeight: 800, fontSize: '0.95rem', color: isDeadlinePassed ? '#ff4d4d' : '#FFC107' }}>
+                            {deadlineDisplay}
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: isDeadlinePassed ? '#ff4d4d' : 'var(--text-dim)' }}>
+                            {isDeadlinePassed ? 'REGISTRATION CLOSED' : 'Closes at this time'}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Register Button */}
-            {registeredSquads >= maxSquads ? (
+            {isDeadlinePassed ? (
+                <div style={{
+                    width: '100%', padding: '20px', fontSize: '1.2rem', fontWeight: 800,
+                    textAlign: 'center', background: 'rgba(255,77,77,0.1)',
+                    border: '1px solid rgba(255,77,77,0.3)', borderRadius: '8px', color: '#ff4d4d',
+                }}>
+                    <i className="fas fa-clock" style={{ marginRight: '12px' }}></i>REGISTRATION DEADLINE PASSED
+                </div>
+            ) : registeredSquads >= maxSquads ? (
                 <div style={{
                     width: '100%', padding: '20px', fontSize: '1.2rem', fontWeight: 800,
                     textAlign: 'center', background: 'rgba(255,77,77,0.1)',

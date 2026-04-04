@@ -32,6 +32,8 @@ const HostModal = ({ isOpen, onClose }) => {
         rules: '',
         isPrivate: false,
         password: '',
+        registrationDeadlineDate: '',
+        registrationDeadlineTime: '',
         pointSystem: {
             kill: 1,
             rank_1: 15, rank_2: 12, rank_3: 10, rank_4: 8, rank_5: 6, rank_6: 4,
@@ -187,6 +189,9 @@ const HostModal = ({ isOpen, onClose }) => {
                 password: formData.isPrivate ? formData.password : null,
                 photo_url: photoUrl,
                 point_system: formData.pointSystem,
+                registration_deadline: formData.registrationDeadlineDate && formData.registrationDeadlineTime 
+                    ? `${formData.registrationDeadlineDate}T${formData.registrationDeadlineTime}` 
+                    : null,
             };
 
             // 3. Check if this host is eligible for the 2-month free trial (by UPI ID)
@@ -482,6 +487,23 @@ const HostModal = ({ isOpen, onClose }) => {
                             <label className="form-label"><i className="fas fa-users" style={{ marginRight: '8px', color: 'var(--primary)' }}></i>Number of Teams *</label>
                             <input type="number" className="form-control" min="1" max="100" value={formData.maxTeams} onChange={(e) => updateField('maxTeams', e.target.value)} placeholder="e.g., 25" required />
                             <span className="form-help">Total teams allowed to register for this tournament.</span>
+                        </div>
+
+                        <div style={{ marginTop: '8px', padding: '16px', background: 'rgba(255,193,7,0.05)', border: '1px solid rgba(255,193,7,0.2)', borderRadius: '12px' }}>
+                            <label className="form-label" style={{ color: '#FFC107', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <i className="fas fa-hourglass-half"></i> Registration Deadline (Optional)
+                            </label>
+                            <div className="grid-2">
+                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <label className="form-label" style={{ fontSize: '0.75rem' }}>Deadline Date</label>
+                                    <input type="date" className="form-control" value={formData.registrationDeadlineDate} onChange={(e) => updateField('registrationDeadlineDate', e.target.value)} />
+                                </div>
+                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <label className="form-label" style={{ fontSize: '0.75rem' }}>Deadline Time</label>
+                                    <input type="time" className="form-control" value={formData.registrationDeadlineTime} onChange={(e) => updateField('registrationDeadlineTime', e.target.value)} />
+                                </div>
+                            </div>
+                            <span className="form-help" style={{ marginTop: '8px', display: 'block' }}>Registration will close after this date & time. Leave empty for no deadline.</span>
                         </div>
                     </div>
 
