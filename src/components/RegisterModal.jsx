@@ -57,8 +57,8 @@ const RegisterModal = ({ isOpen, onClose, tournament }) => {
 
         // --- Player ID Validations ---
         for (let i = 0; i < players.length; i++) {
-            if (players[i].id.length !== 10) {
-                toast.error(`${players[i].label} ID must be exactly 10 digits.`);
+            if (!players[i].id.trim()) {
+                toast.error(`${players[i].label} ID is required.`);
                 return;
             }
         }
@@ -315,16 +315,9 @@ const RegisterModal = ({ isOpen, onClose, tournament }) => {
                                 <input 
                                     type="text" 
                                     className="form-control" 
-                                    placeholder="Game ID (10 digits)" 
+                                    placeholder="Game ID" 
                                     value={player.id} 
-                                    onChange={(e) => {
-                                        const val = e.target.value.replace(/\D/g, '');
-                                        if (val.length <= 10) {
-                                            handlePlayerChange(index, 'id', val);
-                                        }
-                                    }} 
-                                    pattern="\d{10}"
-                                    title="Game ID must be exactly 10 digits"
+                                    onChange={(e) => handlePlayerChange(index, 'id', e.target.value)} 
                                     required 
                                 />
                             </div>

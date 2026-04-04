@@ -134,7 +134,7 @@ const HostIntegritySection = () => {
                 </div>
                 <h2 style={{ fontSize: '2.5rem', marginBottom: '12px' }}>HOST <span style={{ color: 'var(--primary)' }}>INTEGRITY</span></h2>
                 <p style={{ color: 'var(--text-dim)', maxWidth: '600px', margin: '0 auto' }}>
-                    Trusted hosts are the backbone of Arena Hub. We combine verify individual payouts into a verified history for every organizer using their UPI identity.
+                    Real Players. Real Prizes. Real Proof. We combine individual payouts into a verified history for every organizer, so you can compete with 100% confidence.
                 </p>
             </div>
 
