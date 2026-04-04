@@ -42,6 +42,47 @@ const HostTournamentPage = ({ onBack }) => {
     const [photoPreview, setPhotoPreview] = useState(null);
     const [photoFile, setPhotoFile] = useState(null);
     const [dateChips, setDateChips] = useState([]);
+    const [isEligibleForFreeTrial, setIsEligibleForFreeTrial] = useState(true);
+    const [isCheckingTrial, setIsCheckingTrial] = useState(false);
+
+    // Debounced check for Free Trial eligibility based on UPI ID
+    useEffect(() => {
+        if (!formData.upiId) {
+            setIsEligibleForFreeTrial(true);
+            setIsCheckingTrial(false);
+            return;
+        }
+
+        const checkEligibility = async () => {
+            setIsCheckingTrial(true);
+            try {
+                const { data } = await supabase
+                    .from('tournaments')
+                    .select('created_at')
+                    .eq('upi_id', formData.upiId)
+                    .not('host_code', 'like', 'archived_%')
+                    .order('created_at', { ascending: true })
+                    .limit(1);
+
+                if (!data || data.length === 0) {
+                    setIsEligibleForFreeTrial(true);
+                } else {
+                    const firstCreated = new Date(data[0].created_at);
+                    const now = new Date();
+                    const daysSinceFirst = (now - firstCreated) / (1000 * 60 * 60 * 24);
+                    setIsEligibleForFreeTrial(daysSinceFirst < 60);
+                }
+            } catch (error) {
+                console.error('Error checking trial eligibility:', error);
+                setIsEligibleForFreeTrial(true);
+            } finally {
+                setIsCheckingTrial(false);
+            }
+        };
+
+        const timeoutId = setTimeout(checkEligibility, 500);
+        return () => clearTimeout(timeoutId);
+    }, [formData.upiId]);
 
     useEffect(() => {
         const chips = [];
@@ -177,6 +218,15 @@ const HostTournamentPage = ({ onBack }) => {
         setIsSubmitting(true);
         try {
             const hostCode = Math.floor(100000 + Math.random() * 900000).toString();
+            const pPool = formData.prizePool ? parseFloat(formData.prizePool) : 0;
+
+            // Calculate Hosting Fee
+            let hostingFee = 99;
+            if (pPool > 3000) {
+                const extra = pPool - 3000;
+                const increments = Math.ceil(extra / 500);
+                hostingFee += (increments * 20);
+            }
 
             let photoUrl = null;
             if (photoFile) {
@@ -195,10 +245,10 @@ const HostTournamentPage = ({ onBack }) => {
                 tournament_name: tournamentType === 'Standard' ? `${formData.tournamentName} - ${slot.stage}` : `${formData.tournamentName} (${slot.stage})`,
                 upi_id: formData.upiId,
                 entry_fee: formData.entryFee ? parseFloat(formData.entryFee) : 0,
-                prize_pool: formData.prizePool ? parseFloat(formData.prizePool) : 0,
-                date: slot.date, // Use slot-specific date
+                prize_pool: pPool,
+                date: slot.date,
                 start_time: slot.start,
-                room_time: slot.release, // Use slot-specific release time
+                room_time: slot.release,
                 map: matchMaps[idx + 1] || null,
                 max_players: parseInt(formData.maxPlayers) || 100,
                 max_teams: parseInt(formData.maxTeams) || 25,
@@ -208,21 +258,93 @@ const HostTournamentPage = ({ onBack }) => {
                 photo_url: photoUrl,
                 youtube_link: formData.youtubeLink || null,
                 rules: formData.description || null,
-                stage: slot.stage, // Add stage field
+                stage: slot.stage,
                 is_staged: tournamentType === 'Multi-Stage',
                 num_qualifiers: tournamentType === 'Multi-Stage' ? stagedConfig.qualifierMatches : 1,
                 point_system: formData.pointSystem,
             }));
 
-            let { data: insertedData, error: insertError } = await supabase.from('tournaments').insert(
-                baseEntries.map(e => ({ ...e, host_code: hostCode }))
-            ).select();
+            // Check if this host is eligible for the 2-month free trial (by UPI ID)
+            let isFreeTrial = false;
+            if (formData.upiId) {
+                const { data: pastTournaments } = await supabase
+                    .from('tournaments')
+                    .select('created_at')
+                    .eq('upi_id', formData.upiId)
+                    .not('host_code', 'like', 'archived_%')
+                    .order('created_at', { ascending: true })
+                    .limit(1);
 
-            if (insertError) throw insertError;
-            setCreatedCode(hostCode);
-            // Capture the first match ID to use for the registration link
-            if (insertedData && insertedData.length > 0) {
-                setCreatedTournamentId(insertedData[0].id);
+                if (!pastTournaments || pastTournaments.length === 0) {
+                    isFreeTrial = true;
+                } else {
+                    const firstCreated = new Date(pastTournaments[0].created_at);
+                    const now = new Date();
+                    const daysSinceFirst = (now - firstCreated) / (1000 * 60 * 60 * 24);
+                    if (daysSinceFirst < 60) {
+                        isFreeTrial = true;
+                    }
+                }
+            } else {
+                isFreeTrial = true;
+            }
+
+            if (isFreeTrial) {
+                // FREE TRIAL: Insert directly into Supabase, skip Dodo Payments
+                toast.success('🎉 Free Trial Active! Creating your tournament series...', 3000);
+
+                let { data: insertedData, error: insertError } = await supabase.from('tournaments').insert(
+                    baseEntries.map(e => ({ ...e, host_code: hostCode }))
+                ).select();
+
+                if (insertError) throw insertError;
+                setCreatedCode(hostCode);
+                if (insertedData && insertedData.length > 0) {
+                    setCreatedTournamentId(insertedData[0].id);
+                }
+
+                toast.success(`🎉 Tournament Series Created!\n\nYour Host Code is: ${hostCode}`, 10000);
+            } else {
+                // PAID: Insert into DB as 'pending' and redirect to Dodo
+                toast.success(`Hosting Fee: ₹${hostingFee}. Redirecting to payment...`, 3000);
+
+                let { error: insertError } = await supabase.from('tournaments').insert(
+                    baseEntries.map(e => ({ ...e, host_code: `pending_${hostCode}` }))
+                );
+                if (insertError) throw insertError;
+
+                const response = await fetch('/api/dodo/payments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${import.meta.env.VITE_DODO_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        billing: { country: 'IN', city: '', state: '', street: '', zipcode: '' },
+                        customer: { email: 'support@arenahub.com', name: formData.hosterName },
+                        product_cart: [{
+                            product_id: import.meta.env.VITE_DODO_PRODUCT_ID,
+                            amount: hostingFee * 100,
+                            quantity: 1
+                        }],
+                        payment_link: true,
+                        return_url: `${window.location.origin}/?payment=success&host_code=${hostCode}`,
+                    })
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    let errData;
+                    try { errData = JSON.parse(text); } catch(e) { errData = { detail: text }; }
+                    throw new Error(errData.message || errData.detail || 'Failed to initialize payment');
+                }
+
+                const paymentData = await response.json();
+                if (paymentData && paymentData.payment_link) {
+                    window.location.href = paymentData.payment_link;
+                } else {
+                    throw new Error('No payment link returned. Check your API Keys.');
+                }
             }
         } catch (error) {
             console.error('Error creating tournament:', error);
@@ -708,6 +830,42 @@ const HostTournamentPage = ({ onBack }) => {
                 </div>
             </div>
 
+            {/* Free Trial / Hosting Fee Banner */}
+            <div style={{ padding: '20px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', marginTop: '20px', border: '1px solid var(--border)' }}>
+                {isCheckingTrial ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px 0' }}>
+                        <i className="fas fa-spinner fa-spin" style={{ color: 'var(--primary)', marginRight: '10px' }}></i> Checking Free Trial Eligibility...
+                    </div>
+                ) : isEligibleForFreeTrial ? (
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ color: '#00e676', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '8px' }}>
+                            <i className="fas fa-gift"></i> 2-Month Free Trial Active!
+                        </div>
+                        <div style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>
+                            Your Platform Hosting Fee (₹{parseFloat(formData.prizePool) > 3000 ? 99 + Math.ceil((parseFloat(formData.prizePool) - 3000) / 500) * 20 : 99}) is waived. Enjoy hosting!
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                            <span style={{ color: 'var(--text-dim)' }}>Base Hosting Fee (up to ₹3000 prize)</span>
+                            <span style={{ fontWeight: 'bold' }}>₹99</span>
+                        </div>
+                        {parseFloat(formData.prizePool) > 3000 && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', color: 'var(--primary)' }}>
+                                <span>Extra Prize Pool Fee (+₹20 per ₹500 over ₹3000)</span>
+                                <span>+₹{(Math.ceil((parseFloat(formData.prizePool) - 3000) / 500) * 20)}</span>
+                            </div>
+                        )}
+                        <div style={{ height: '1px', background: 'var(--border)', margin: '12px 0' }}></div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '1.2rem', fontWeight: 800 }}>
+                            <span>Total Platform Fee:</span>
+                            <span>₹{99 + (parseFloat(formData.prizePool) > 3000 ? Math.ceil((parseFloat(formData.prizePool) - 3000) / 500) * 20 : 0)}</span>
+                        </div>
+                    </>
+                )}
+            </div>
+
             {/* Navigation & Submit */}
             <div style={{ display: 'flex', gap: '16px', marginTop: '40px' }}>
                 <button
@@ -721,12 +879,14 @@ const HostTournamentPage = ({ onBack }) => {
                     className="btn btn-primary"
                     style={{ flex: 2, padding: '20px', fontSize: '1.2rem', fontWeight: 800 }}
                     onClick={handleSubmit}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isCheckingTrial}
                 >
-                    {isSubmitting ? (
-                        <><i className="fas fa-circle-notch fa-spin" style={{ marginRight: '10px' }}></i> CREATING...</>
+                    {isSubmitting || isCheckingTrial ? (
+                        <><i className="fas fa-circle-notch fa-spin" style={{ marginRight: '10px' }}></i> {isSubmitting ? 'CREATING...' : 'CHECKING...'}</>
+                    ) : isEligibleForFreeTrial ? (
+                        <><i className="fas fa-check-circle" style={{ marginRight: '10px' }}></i> CREATE FOR FREE</>
                     ) : (
-                        <><i className="fas fa-rocket" style={{ marginRight: '10px' }}></i> CREATE TOURNAMENT SERIES</>
+                        <><i className="fas fa-lock" style={{ marginRight: '10px' }}></i> PAY & CREATE SERIES</>
                     )}
                 </button>
             </div>
