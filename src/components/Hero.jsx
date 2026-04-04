@@ -6,7 +6,7 @@ const Hero = ({ onHostClick, onMultiClick }) => {
             <div style={{ position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)', width: '600px', height: '600px', background: 'radial-gradient(circle, var(--primary-glow) 0%, transparent 70%)', opacity: 0.15, zIndex: -1 }}></div>
 
             <div className="badge badge-open" style={{ display: 'inline-block', marginBottom: '24px' }}>⚡ SEASON 4 LIVE NOW</div>
-            <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', lineHeight: 1, marginBottom: '24px' }}>WHERE SKILL MEETS <br /> <span className="text-gradient">GLORY</span></h1>
+            <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', lineHeight: 1, marginBottom: '24px' }}>DOMINATE THE <br /> <span className="text-gradient">BATTLEGROUND</span></h1>
             <p style={{ color: 'var(--text-dim)', maxWidth: '600px', margin: '0 auto 40px', fontSize: '1.1rem' }}>The ultimate home for mobile eSports. Join India's fastest-growing competitive platform for BGMI, Free Fire, and CODM tournaments with instant payouts and full transparency.</p>
 
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginBottom: '60px', flexWrap: 'wrap' }}>
