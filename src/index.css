@@ -27,6 +27,11 @@
     -webkit-font-smoothing: antialiased;
 }
 
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+}
+
 body {
     background-color: var(--bg-dark);
     background-image: linear-gradient(rgba(10, 12, 16, 0.85), rgba(10, 12, 16, 0.85)), url('./assets/bg-gaming.png');

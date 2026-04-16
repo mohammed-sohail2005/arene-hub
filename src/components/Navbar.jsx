@@ -16,7 +16,7 @@ const Navbar = ({ onHostClick, onHostPageClick, onTeamPortalClick }) => {
                 <div className="nav-links" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
                     <a href="#tournaments" onClick={(e) => { e.preventDefault(); document.getElementById('tournaments')?.scrollIntoView({ behavior: 'smooth' }); }} style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', cursor: 'pointer' }}>Tournaments</a>
                     <a href="#about" onClick={(e) => { e.preventDefault(); document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); }} style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', cursor: 'pointer' }}>About</a>
-                    <a href="#leaderboard" onClick={(e) => { e.preventDefault(); document.getElementById('leaderboard')?.scrollIntoView({ behavior: 'smooth' }); }} style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', cursor: 'pointer' }}>Leaderboard</a>
+                    <a href="#contact" onClick={(e) => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }} style={{ color: 'var(--text-dim)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', cursor: 'pointer' }}>Contact Us</a>
                 </div>
 
                 <div className="nav-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
